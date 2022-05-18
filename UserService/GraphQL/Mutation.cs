@@ -14,6 +14,81 @@ namespace UserService.GraphQL
 {
     public class Mutation
     {
+        [Authorize(Roles = new[] { "ADMIN" })]
+        public async Task<UserData> AddUserAsync(
+               RegisterUser input,
+               [Service] FoodDeliveringContext context)
+        {
+            var user = context.Users.Where(o => o.Username == input.UserName).FirstOrDefault();
+            if (user != null)
+            {
+                return await Task.FromResult(new UserData());
+            }
+            var newUser = new User
+            {
+                FullName = input.FullName,
+                Email = input.Email,
+                Username = input.UserName,
+                Password = BCrypt.Net.BCrypt.HashPassword(input.Password) // encrypt password
+            };
+
+            context.Users.Add(newUser);
+            await context.SaveChangesAsync();
+            return await Task.FromResult(new UserData
+            {
+                Id = newUser.Id,
+                Username = newUser.Username,
+                Email = newUser.Email,
+                FullName = newUser.FullName
+            });
+        }
+
+        [Authorize(Roles = new[] { "ADMIN" })]
+        public async Task<UserData> UpdateUserAsync(
+               UserData input,
+               [Service] FoodDeliveringContext context
+               )
+        {
+            var user = context.Users.Where(s => s.Id == input.Id).FirstOrDefault();
+            if (user != null)
+            {
+                user.FullName = input.FullName;
+                user.Email = input.Email;
+                user.Username = input.Username;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(input.Password);
+                context.Users.Update(user);
+                await context.SaveChangesAsync();
+            }
+            return await Task.FromResult(new UserData
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                FullName = user.FullName
+            });
+        }
+
+        [Authorize(Roles = new[] { "ADMIN" })]
+        public async Task<UserData> DeleteUserAsync(
+            int id,
+            [Service] FoodDeliveringContext context
+            )
+        {
+            var user = context.Users.Where(s => s.Id == id).FirstOrDefault();
+            if (user != null)
+            {
+                context.Users.Remove(user);
+                await context.SaveChangesAsync();
+            }
+            return await Task.FromResult(new UserData
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                FullName = user.FullName
+            });
+        }
+
         public async Task<UserData> RegisterUserAsync(
                RegisterUser input,
                [Service] FoodDeliveringContext context)
@@ -113,6 +188,29 @@ namespace UserService.GraphQL
             return await Task.FromResult(new UserToken(null, null, Message: "Username or password was invalid"));
         }
 
+        [Authorize]
+        public async Task<ResponseChangePassword> ChangePasswordAsync(
+            ChangePassword input,
+            ClaimsPrincipal claimsPrincipal,// setting token
+            [Service] FoodDeliveringContext context) // EF
+        {
+            var Username = claimsPrincipal.Identity.Name;
 
+            var user = context.Users.Where(o => o.Username == Username).FirstOrDefault();
+            bool valid = BCrypt.Net.BCrypt.Verify(input.CurrentPassword, user.Password);
+
+            if (valid)
+            {
+                if (input.NewPassword != input.ConfirmPassword)
+                {
+                    return await Task.FromResult(new ResponseChangePassword(Message: "New Password and Confirmation Password Are Not The Same", Created: DateTime.Now.ToString()));
+                }
+                user.Password = BCrypt.Net.BCrypt.HashPassword(input.ConfirmPassword);
+                context.Users.Update(user);
+                context.SaveChangesAsync();
+                return await Task.FromResult(new ResponseChangePassword(Message: "Password Has Been Updated", Created: DateTime.Now.ToString()));
+            }
+            return await Task.FromResult(new ResponseChangePassword(Message: "Failed To Update Password", Created: DateTime.Now.ToString()));
+        }
     }
 }
