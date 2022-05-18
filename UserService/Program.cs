@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using UserService.GraphQL;
+using Library.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<FoodDeliveringContext>(options =>
 // GraphQL
 builder.Services
     .AddGraphQLServer()
+    .AddQueryType<Query>()
     .AddMutationType<Mutation>()
     .AddAuthorization();
 
