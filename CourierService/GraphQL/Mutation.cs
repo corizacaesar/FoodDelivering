@@ -2,6 +2,7 @@
 using HotChocolate.AspNetCore.Authorization;
 using Library.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace CourierService.GraphQL
 {
@@ -105,6 +106,73 @@ namespace CourierService.GraphQL
                 Email = courier.Email,
                 FullName = courier.FullName
             });
+        }
+
+        [Authorize(Roles = new[] { "COURIER" })]
+        public async Task<OrderOutput> UpdateLokasiAsync(
+            OrderInputLokasi input,
+            [Service] FoodDeliveringContext context,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            var Username = claimsPrincipal.Identity.Name;
+            var user = context.Users.Where(o => o.Username == Username).FirstOrDefault();
+            var order = context.Orders.Where(o => o.Id == input.OrderId).FirstOrDefault();
+
+            if (order != null)
+            {
+                if(order.CourierId == user.Id)
+                {
+
+                    order.Latitude = input.Latitude;
+                    order.Longitude = input.Longitude;
+
+
+                    context.Orders.Update(order);
+                    await context.SaveChangesAsync();
+                    return await Task.FromResult(new OrderOutput("Berhasil Menambahkan Lokasi"));
+                }
+            }
+
+            return await Task.FromResult(new OrderOutput("Gagal Menambahkan Lokasi"));
+        }
+
+
+        [Authorize(Roles = new[] { "COURIER" })]
+        public async Task<OrderOutput> CompleteOrderAsync(
+            int id,
+            [Service] FoodDeliveringContext context,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            var Username = claimsPrincipal.Identity.Name;
+            var user = context.Users.Where(o => o.Username == Username).FirstOrDefault();
+            var order = context.Orders.Where(o => o.Id == id).FirstOrDefault();
+
+            if (order != null)
+            {
+                if(order.CourierId == user.Id)
+                {
+                    if (order.Status == false)
+                    {
+
+                        order.Status = true;
+
+
+                        context.Orders.Update(order);
+                        await context.SaveChangesAsync();
+                        return await Task.FromResult(new OrderOutput("Order Telah Selesai"));
+                    }
+                    else
+                    {
+                        return await Task.FromResult(new OrderOutput("Order Sudah Selesai"));
+                    }
+                }
+                else
+                {
+                    return await Task.FromResult(new OrderOutput("Anda Bukan Courier Pada Order Berikut"));
+                }
+            }
+            
+            return await Task.FromResult(new OrderOutput("Order Tidak Ada"));
         }
     }
 }
