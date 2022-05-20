@@ -71,5 +71,51 @@ namespace FoodService.GraphQL
 
             return await Task.FromResult(product);
         }
+
+
+        [Authorize(Roles = new[] { "BUYER" })]
+        public async Task<OrderOutput> AddOrderByBuyerAsync(
+            OrderInput input,
+            [Service] FoodDeliveringContext context,
+            ClaimsPrincipal claimsPrincipal)
+        {
+            
+            var Username = claimsPrincipal.Identity.Name;
+            var user = context.Users.Where(o => o.Username == Username).FirstOrDefault();
+            var food = context.Foods.Where(f => f.Name == input.Product).FirstOrDefault();
+
+            using var transaction = context.Database.BeginTransaction();
+            try
+            {
+                    var order = new Order
+                    {
+                        UserId = user.Id,
+                        Code = DateTime.Now.ToString(),
+                        Status = false,
+                        Created = DateTime.Now
+                    };
+                    context.Orders.Add(order);
+                    await context.SaveChangesAsync();
+
+                    var orderDetail = new OrderDetail
+                    {
+                        Quantity = input.Quantity,
+                        OrderId = order.Id,
+                        FoodId = food.Id
+                    };
+                    context.OrderDetails.Add(orderDetail);
+                    await context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                    return await Task.FromResult(new OrderOutput(DateTime.Now.ToString(),
+                        "Berhasil Memesan Makanan"));
+                
+            }
+            catch
+            {
+                transaction.Rollback();
+            }
+            return await Task.FromResult(new OrderOutput(DateTime.Now.ToString(), "Gagal Memesan Makanan"));
+        }
     }
 }

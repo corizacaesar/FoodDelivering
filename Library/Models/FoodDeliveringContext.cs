@@ -56,7 +56,9 @@ namespace Library.Models
 
                 entity.Property(e => e.Created).HasColumnType("datetime");
 
-                entity.Property(e => e.Langitude)
+                entity.Property(e => e.CourierId);
+
+                entity.Property(e => e.Longitude)
                     .HasMaxLength(50)
                     .IsUnicode(false);
 

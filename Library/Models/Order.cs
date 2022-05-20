@@ -14,7 +14,8 @@ namespace Library.Models
         public string Code { get; set; } = null!;
         public int UserId { get; set; }
         public string? Latitude { get; set; }
-        public string? Langitude { get; set; }
+        public string? Longitude { get; set; }
+        public int? CourierId { get; set; }
         public bool Status { get; set; }
         public DateTime Created { get; set; }
 

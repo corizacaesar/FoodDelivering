@@ -212,5 +212,46 @@ namespace UserService.GraphQL
             }
             return await Task.FromResult(new ResponseChangePassword(Message: "Failed To Update Password", Created: DateTime.Now.ToString()));
         }
+
+
+        [Authorize(Roles = new[] { "MANAGER" })]
+        public async Task<OrderOutput> UpdateOrderAsync(
+            OrderInput input,
+            [Service] FoodDeliveringContext context)
+        {
+
+            var order = context.Orders.Where(o => o.Id == input.OrderId).FirstOrDefault();
+            var role = context.UserRoles.Where(u => u.UserId == input.CourierId).FirstOrDefault();
+
+            if (order != null && role.RoleId == 4 && order.CourierId == null)
+            {
+                order.CourierId = input.CourierId;
+
+
+                context.Orders.Update(order);
+                await context.SaveChangesAsync();
+                return await Task.FromResult(new OrderOutput("Berhasil Menambahkan Kurir"));
+            }
+                           
+            return await Task.FromResult(new OrderOutput("Gagal Menambahkan Kurir"));
+        }
+
+        [Authorize(Roles = new[] { "MANAGER" })]
+        public async Task<OrderOutput> DeleteOrderAsync(
+            int id,
+            [Service] FoodDeliveringContext context)
+        {
+
+            var order = context.Orders.Where(o => o.Id == id).FirstOrDefault();
+            var orderdetail = context.OrderDetails.Where(o => o.OrderId == id).FirstOrDefault();
+            if (order != null)
+            {
+                context.OrderDetails.Remove(orderdetail);
+                context.Orders.Remove(order);
+                await context.SaveChangesAsync();
+                return await Task.FromResult(new OrderOutput("Berhasil Menghapus Order"));
+            }
+            return await Task.FromResult(new OrderOutput("Gagal Menghapus Order"));
+        }
     }
 }

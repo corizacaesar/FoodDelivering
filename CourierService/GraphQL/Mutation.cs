@@ -62,16 +62,14 @@ namespace CourierService.GraphQL
             CourierInput input,
             [Service] FoodDeliveringContext context)
         {
-            var courier = context.Users.Where(o => o.Id == input.Id).FirstOrDefault();
+            var role = context.UserRoles.Where(u => u.UserId == input.Id).FirstOrDefault();
+            var courier = context.Users.Where(o => o.Id == input.Id && role.RoleId == 4).FirstOrDefault();
             if (courier != null)
             {
                 courier.FullName = input.FullName;
                 courier.Email = input.Email;
                 courier.Username = input.Username;
                 courier.Password = BCrypt.Net.BCrypt.HashPassword(input.Password);
-                context.Users.Update(courier);
-                await context.SaveChangesAsync();
-
                 context.Users.Update(courier);
                 await context.SaveChangesAsync();
             }
@@ -91,9 +89,12 @@ namespace CourierService.GraphQL
             int id,
             [Service] FoodDeliveringContext context)
         {
-            var courier = context.Users.Where(o => o.Id == id).Include(user => user.UserRoles).FirstOrDefault();
+
+            var role = context.UserRoles.Where(u => u.UserId == id).FirstOrDefault();
+            var courier = context.Users.Where(o => o.Id == id && role.RoleId == 4).FirstOrDefault();
             if (courier != null)
             {
+                context.UserRoles.Remove(role);
                 context.Users.Remove(courier);
                 await context.SaveChangesAsync();
             }
