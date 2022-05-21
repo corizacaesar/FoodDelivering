@@ -3,12 +3,16 @@ version: '3.4'
 services:
   userservice:
     image: ${DOCKER_REGISTRY-}userservice
+    ports:
+      - "8081:443" 
     build:
       context: .
       dockerfile: UserService/Dockerfile
 
   foodservice:
     image: ${DOCKER_REGISTRY-}foodservice
+    ports:
+      - "8082:443" 
     build:
       context: .
       dockerfile: FoodService/Dockerfile
@@ -16,6 +20,8 @@ services:
 
   courierservice:
     image: ${DOCKER_REGISTRY-}courierservice
+    ports:
+      - "8083:443" 
     build:
       context: .
       dockerfile: CourierService/Dockerfile
