@@ -169,7 +169,6 @@ namespace UserService.GraphQL
                         claims.Add(new Claim(ClaimTypes.Role, role.Name));
                     }
                 }
-
                 var expired = DateTime.Now.AddHours(3);
                 var jwtToken = new JwtSecurityToken(
                     issuer: tokenSettings.Value.Issuer,
@@ -221,19 +220,18 @@ namespace UserService.GraphQL
         {
 
             var order = context.Orders.Where(o => o.Id == input.OrderId).FirstOrDefault();
-            var role = context.UserRoles.Where(u => u.UserId == input.CourierId).FirstOrDefault();
 
-            if (order != null && role.RoleId == 4 && order.CourierId == null)
+            if (order != null)
             {
                 order.CourierId = input.CourierId;
-
+                order.Status = input.Status;
 
                 context.Orders.Update(order);
                 await context.SaveChangesAsync();
-                return await Task.FromResult(new OrderOutput("Berhasil Menambahkan Kurir"));
+                return await Task.FromResult(new OrderOutput("Berhasil Memperbaharui Order"));
             }
                            
-            return await Task.FromResult(new OrderOutput("Gagal Menambahkan Kurir"));
+            return await Task.FromResult(new OrderOutput("Gagal Memperbaharui Order"));
         }
 
         [Authorize(Roles = new[] { "MANAGER" })]

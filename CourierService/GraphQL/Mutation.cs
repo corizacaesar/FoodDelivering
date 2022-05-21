@@ -131,6 +131,10 @@ namespace CourierService.GraphQL
                     await context.SaveChangesAsync();
                     return await Task.FromResult(new OrderOutput("Berhasil Menambahkan Lokasi"));
                 }
+                else
+                {
+                    return await Task.FromResult(new OrderOutput("Anda Bukan Courier Pada Order Berikut"));
+                }
             }
 
             return await Task.FromResult(new OrderOutput("Gagal Menambahkan Lokasi"));
@@ -153,13 +157,19 @@ namespace CourierService.GraphQL
                 {
                     if (order.Status == false)
                     {
+                        if(order.Latitude == null || order.Longitude == null)
+                        {
+                            return await Task.FromResult(new OrderOutput("Order Belum Selesai"));
+                        }
+                        else
+                        {
+                            order.Status = true;
 
-                        order.Status = true;
 
-
-                        context.Orders.Update(order);
-                        await context.SaveChangesAsync();
-                        return await Task.FromResult(new OrderOutput("Order Telah Selesai"));
+                            context.Orders.Update(order);
+                            await context.SaveChangesAsync();
+                            return await Task.FromResult(new OrderOutput("Order Telah Selesai"));
+                        }
                     }
                     else
                     {

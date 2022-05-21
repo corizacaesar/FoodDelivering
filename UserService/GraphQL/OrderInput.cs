@@ -3,6 +3,7 @@
     public record OrderInput
     (
         int OrderId,
-        int CourierId
+        int CourierId,
+        bool Status
     );
 }

@@ -17,7 +17,7 @@ namespace FoodService.GraphQL
     {
         [Authorize(Roles = new[] { "MANAGER" })]
         public async Task<Food> AddFoodAsync(
-            FoodInput input,
+            InputFood input,
             [Service] FoodDeliveringContext context)
         {
 
@@ -38,7 +38,7 @@ namespace FoodService.GraphQL
 
         [Authorize(Roles = new[] { "MANAGER" })]
         public async Task<Food> UpdateFoodAsync(
-            FoodInput input,
+            InputFood input,
             [Service] FoodDeliveringContext context)
         {
             var food = context.Foods.Where(o => o.Id == input.Id).FirstOrDefault();
@@ -75,14 +75,13 @@ namespace FoodService.GraphQL
 
         [Authorize(Roles = new[] { "BUYER" })]
         public async Task<OrderOutput> AddOrderByBuyerAsync(
-            OrderInput input,
+            InputOrder input,
             [Service] FoodDeliveringContext context,
             ClaimsPrincipal claimsPrincipal)
         {
             
             var Username = claimsPrincipal.Identity.Name;
             var user = context.Users.Where(o => o.Username == Username).FirstOrDefault();
-            var food = context.Foods.Where(f => f.Name == input.Product).FirstOrDefault();
 
             using var transaction = context.Database.BeginTransaction();
             try
@@ -92,18 +91,24 @@ namespace FoodService.GraphQL
                         UserId = user.Id,
                         Code = DateTime.Now.ToString(),
                         Status = false,
-                        Created = DateTime.Now
+                        Created = DateTime.Now,
+                        CourierId = input.CourierId
                     };
                     context.Orders.Add(order);
                     await context.SaveChangesAsync();
 
-                    var orderDetail = new OrderDetail
+
+                foreach (var item in input.Details)
+                {
+                    OrderDetail detail = new OrderDetail
                     {
-                        Quantity = input.Quantity,
                         OrderId = order.Id,
-                        FoodId = food.Id
+                        FoodId = item.FoodId,
+                        Quantity = item.Quantity,
                     };
-                    context.OrderDetails.Add(orderDetail);
+                    order.OrderDetails.Add(detail);
+                }
+
                     await context.SaveChangesAsync();
 
                     await transaction.CommitAsync();

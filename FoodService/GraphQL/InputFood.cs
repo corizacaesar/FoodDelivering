@@ -1,6 +1,6 @@
 ﻿namespace FoodService.GraphQL
 {
-    public record FoodInput
+    public record InputFood
     (
         int? Id,
         string Name,
