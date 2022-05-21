@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  userservice:
+    image: ${DOCKER_REGISTRY-}userservice
+    build:
+      context: .
+      dockerfile: UserService/Dockerfile
+
+  foodservice:
+    image: ${DOCKER_REGISTRY-}foodservice
+    build:
+      context: .
+      dockerfile: FoodService/Dockerfile
+
+
+  courierservice:
+    image: ${DOCKER_REGISTRY-}courierservice
+    build:
+      context: .
+      dockerfile: CourierService/Dockerfile
+
+
+  librarydata:
+    image: ${DOCKER_REGISTRY-}librarydata
+    build:
+      context: .
+      dockerfile: LibraryData/Dockerfile
+

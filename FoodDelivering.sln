@@ -7,9 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library", "Library\Library.csproj", "{068E77C3-DF70-4B90-B1C8-AAB4DB05E34D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodService", "FoodService\FoodService.csproj", "{1566A2FE-A755-4636-888B-5458451579CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoodService", "FoodService\FoodService.csproj", "{1566A2FE-A755-4636-888B-5458451579CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CourierService", "CourierService\CourierService.csproj", "{F5BF9763-3041-45AF-87BD-FBE8B98E1892}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CourierService", "CourierService\CourierService.csproj", "{F5BF9763-3041-45AF-87BD-FBE8B98E1892}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{26EBC2FE-C731-4DDB-95BA-A81A1168B8B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryData", "LibraryData\LibraryData.csproj", "{46AAE6CD-499C-4CEF-8077-97B0A2EFDF2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{F5BF9763-3041-45AF-87BD-FBE8B98E1892}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5BF9763-3041-45AF-87BD-FBE8B98E1892}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5BF9763-3041-45AF-87BD-FBE8B98E1892}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26EBC2FE-C731-4DDB-95BA-A81A1168B8B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26EBC2FE-C731-4DDB-95BA-A81A1168B8B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26EBC2FE-C731-4DDB-95BA-A81A1168B8B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26EBC2FE-C731-4DDB-95BA-A81A1168B8B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46AAE6CD-499C-4CEF-8077-97B0A2EFDF2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46AAE6CD-499C-4CEF-8077-97B0A2EFDF2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46AAE6CD-499C-4CEF-8077-97B0A2EFDF2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46AAE6CD-499C-4CEF-8077-97B0A2EFDF2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
