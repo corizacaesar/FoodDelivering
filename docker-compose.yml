@@ -5,6 +5,8 @@ services:
     image: ${DOCKER_REGISTRY-}userservice
     ports:
       - "8081:443" 
+    depends_on:
+      - mssql
     build:
       context: .
       dockerfile: UserService/Dockerfile
@@ -13,6 +15,8 @@ services:
     image: ${DOCKER_REGISTRY-}foodservice
     ports:
       - "8082:443" 
+    depends_on:
+      - mssql
     build:
       context: .
       dockerfile: FoodService/Dockerfile
@@ -22,6 +26,8 @@ services:
     image: ${DOCKER_REGISTRY-}courierservice
     ports:
       - "8083:443" 
+    depends_on:
+      - mssql
     build:
       context: .
       dockerfile: CourierService/Dockerfile
@@ -33,3 +39,12 @@ services:
       context: .
       dockerfile: LibraryData/Dockerfile
 
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: mssql
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Kosongkan@Saja"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
